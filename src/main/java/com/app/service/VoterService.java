@@ -21,13 +21,11 @@ import java.time.LocalDateTime;
 @Transactional
 public class VoterService {
     private VoterRepository voterRepository;
-    private ConstituencyRepository constituencyRepository;
     private TokenRepository tokenRepository;
     private MyModelMapper modelMapper;
 
-    public VoterService(VoterRepository voterRepository, ConstituencyRepository constituencyRepository, TokenRepository tokenRepository, MyModelMapper modelMapper) {
+    public VoterService(VoterRepository voterRepository, TokenRepository tokenRepository, MyModelMapper modelMapper) {
         this.voterRepository = voterRepository;
-        this.constituencyRepository = constituencyRepository;
         this.tokenRepository = tokenRepository;
         this.modelMapper = modelMapper;
     }

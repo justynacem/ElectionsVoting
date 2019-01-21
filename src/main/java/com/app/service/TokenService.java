@@ -5,9 +5,11 @@ import com.app.dto.TokenDto;
 import com.app.exceptions.ExceptionCode;
 import com.app.exceptions.ExceptionInfo;
 import com.app.exceptions.MyException;
+import com.app.model.Token;
 import com.app.repository.TokenRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -23,41 +25,33 @@ public class TokenService {
         this.modelMapper = modelMapper;
     }
 
-    public String newToken() {
-        Random rnd = new Random();
-        StringBuilder token = new StringBuilder();
-        for (int i = 0; i < 4; i++) {
-            token.append(String.valueOf(rnd.nextInt(9)));
-        }
-        return token.toString();
-    }
-
-    public TokenDto getTokenById(Long id) {
+    public void checkDate() {
         try {
-            if (id == null) {
-                throw new NullPointerException("OBJECT IS NULL");
-            }
-            return tokenRepository
-                    .findAll()
-                    .stream()
-                    .filter(t -> t.getVoter().getId().equals(id))
-                    .map(modelMapper::fromTokenToTokenDto)
-                    .findFirst()
-                    .orElseThrow(NullPointerException::new);
+            tokenRepository.findTokensByExpirationDateBefore(LocalDateTime.now())
+                    .forEach(tokenRepository::delete);
         } catch (Exception e) {
-            throw new MyException(ExceptionCode.SERVICE, "GET TOKEN BY VOTER ID: " + e);
+            e.printStackTrace();
+            throw new MyException(ExceptionCode.TOKEN, "CHECK TOKEN: " + e);
         }
     }
 
-    public Optional<TokenDto> ckeckTocken(String tokenKey) {
+    public void checkTocken(String tokenValue) {
         try {
-             return tokenRepository.findAll()
+            tokenRepository.findAll()
                     .stream()
-                    .filter(t -> t.getTokenValue().equals(tokenKey))
-                    .map(modelMapper::fromTokenToTokenDto)
-                    .findFirst();
+                    .filter(t -> t.getTokenValue().equals(tokenValue))
+                    .findFirst().orElseThrow(NullPointerException::new);
         } catch (Exception e) {
-            throw new MyException(ExceptionCode.SERVICE, "CHECK TOKEN: " + e);
+            throw new MyException(ExceptionCode.TOKEN, "CHECK TOKEN: " + e);
+        }
+    }
+
+    public void deleteTocken(String tokenValue) {
+        try {
+            tokenRepository.delete(tokenRepository.findTokenByTokenValue(tokenValue)
+                    .orElseThrow(NullPointerException::new));
+        } catch (Exception e) {
+            throw new MyException(ExceptionCode.TOKEN, "CHECK TOKEN: " + e);
         }
     }
 }
