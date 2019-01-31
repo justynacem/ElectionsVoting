@@ -30,18 +30,6 @@ public class PoliticalPartyService {
         this.modelMapper = modelMapper;
     }
 
-    public void addPoliticalParty(PoliticalPartyDto politicalPartyDto) {
-        try {
-            if (politicalPartyDto == null) {
-                throw new NullPointerException("NULL POLITICAL PARTY");
-            }
-            PoliticalParty politicalParty = modelMapper.fromPoliticalPartyDtoToPoliticalParty(politicalPartyDto);
-            politicalPartyRepository.save(politicalParty);
-        } catch (Exception e) {
-            throw new MyException(ExceptionCode.SERVICE, "ADD POLITICAL PARTY" + e);
-        }
-    }
-
     public List<PoliticalPartyDto> getAllPoliticalParties() {
         try {
             return politicalPartyRepository
@@ -54,18 +42,8 @@ public class PoliticalPartyService {
         }
     }
 
-    public void deletePoliticalParty(Long politicalPartyId) {
-        try {
-            PoliticalParty politicalParty = politicalPartyRepository.findById(politicalPartyId)
-                    .orElseThrow(NullPointerException::new);
-            politicalPartyRepository.delete(politicalParty);
-        } catch (Exception e) {
-            throw new MyException(ExceptionCode.SERVICE, "DELETE POLITICAL PARTY: " + e);
-        }
-    }
-
     public Map<PoliticalPartyDto, Integer> getAllPoliticalPartiesByVotes() {
-        Map<PoliticalPartyDto, Integer> partiesVotes = new LinkedHashMap<>();
+        Map<PoliticalPartyDto, Integer> partiesWithVotes = new LinkedHashMap<>();
 
         try {
             Map<Candidate, Integer> map = voteRepository
@@ -79,23 +57,18 @@ public class PoliticalPartyService {
                     ));
             for (Map.Entry<Candidate, Integer> entry : map.entrySet()) {
                 PoliticalPartyDto politicalPartyDto = modelMapper.fromPoliticalPartyToPoliticalPartyDto(
-                        politicalPartyRepository.findById(entry.getKey().getPoliticalParty().getId())
-                                .orElseThrow(NullPointerException::new));
-                if (partiesVotes.keySet().contains(politicalPartyDto)) {
-                    partiesVotes.put(politicalPartyDto,
-                            partiesVotes.get(politicalPartyDto) + entry.getValue());
+                        politicalPartyRepository.findById(entry.getKey().getPoliticalParty().getId()).get());
+                if (partiesWithVotes.keySet().contains(politicalPartyDto)) {
+                    partiesWithVotes.put(politicalPartyDto,
+                            partiesWithVotes.get(politicalPartyDto) + entry.getValue());
                 } else {
-                    partiesVotes.put(politicalPartyDto,
+                    partiesWithVotes.put(politicalPartyDto,
                             entry.getValue());
                 }
-                partiesVotes
-                        .entrySet()
-                        .stream()
-                        .sorted(Comparator.comparing(e -> e.getValue(), Comparator.reverseOrder()));
             }
         } catch (Exception e) {
-            throw new MyException(ExceptionCode.SERVICE, "GET ALL POLITICAL PARTIES BY VOTES: " + e);
+            throw new MyException(ExceptionCode.SERVICE, "GET ALL POLITICAL PARTIES SORTED BY VOTES: " + e);
         }
-        return partiesVotes;
+        return partiesWithVotes;
     }
 }

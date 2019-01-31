@@ -86,6 +86,15 @@ public class CandidateService {
                             () -> new LinkedHashMap<>()
                     ));
 
+            /*return voteRepository.findAllByCandidateOrderByVotes().stream()
+                    .collect(Collectors.toMap(
+                            v -> v.getCandidate(),
+                            v -> v.getVotes(),
+                            (v1, v2) -> v1,
+                            () -> new LinkedHashMap<>()
+
+                    ));*/
+
         } catch (Exception e) {
             throw new MyException(ExceptionCode.SERVICE, "GET ALL CANDIDATES BY VOTES: " + e);
         }

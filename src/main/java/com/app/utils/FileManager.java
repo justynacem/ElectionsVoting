@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class FileManager {
 
-    private final static String IMAGE_PATH = "D:\\ProgramowanieKM\\MyProjects\\SpringBootElectionsManagement\\src\\main\\resources\\static\\img\\";
+    private final static String IMAGE_PATH = "D:\\ProgramowanieKM\\MyProjects\\SpringBootElectionsManagement\\src\\main\\resources\\static\\img";
 
     private String createFilename(MultipartFile file) {
         try {

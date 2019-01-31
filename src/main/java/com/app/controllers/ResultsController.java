@@ -19,7 +19,7 @@ public class ResultsController {
     }
 
     @GetMapping
-    public String getAllCandidatesSortedByVotes(Model model) {
+    public String getResults(Model model) {
         model.addAttribute("candidatesByVotes", candidateService.getAllCandidatesByVotes());
         model.addAttribute("politicalPartiesByVotes", politicalPartyService.getAllPoliticalPartiesByVotes());
         return "results/all";

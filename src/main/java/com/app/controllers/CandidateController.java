@@ -27,6 +27,6 @@ public class CandidateController {
     @GetMapping("/vote/{id}")
     public String addVote(@PathVariable Long id) {
         candidateService.addVoteToCandidate(id);
-        return "redirect:/results/all";
+        return "results/all";
     }
 }
