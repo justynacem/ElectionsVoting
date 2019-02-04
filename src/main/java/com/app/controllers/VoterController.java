@@ -1,7 +1,5 @@
 package com.app.controllers;
 import com.app.dto.TokenDto;
-import com.app.exceptions.ExceptionCode;
-import com.app.exceptions.MyException;
 import com.app.service.TokenService;
 import com.app.service.VoterService;
 import com.app.validators.TokenValidator;

@@ -6,6 +6,7 @@ import com.app.exceptions.ExceptionCode;
 import com.app.exceptions.MyException;
 import com.app.model.Candidate;
 import com.app.model.PoliticalParty;
+import com.app.model.Vote;
 import com.app.repository.CandidateRepository;
 import com.app.repository.PoliticalPartyRepository;
 import com.app.repository.VoteRepository;
@@ -19,13 +20,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class PoliticalPartyService {
     private PoliticalPartyRepository politicalPartyRepository;
-    private CandidateRepository candidateRepository;
     private VoteRepository voteRepository;
     private MyModelMapper modelMapper;
 
-    public PoliticalPartyService(PoliticalPartyRepository politicalPartyRepository, CandidateRepository candidateRepository, VoteRepository voteRepository, MyModelMapper modelMapper) {
+    public PoliticalPartyService(PoliticalPartyRepository politicalPartyRepository, VoteRepository voteRepository, MyModelMapper modelMapper) {
         this.politicalPartyRepository = politicalPartyRepository;
-        this.candidateRepository = candidateRepository;
         this.voteRepository = voteRepository;
         this.modelMapper = modelMapper;
     }
@@ -43,32 +42,17 @@ public class PoliticalPartyService {
     }
 
     public Map<PoliticalPartyDto, Integer> getAllPoliticalPartiesByVotes() {
-        Map<PoliticalPartyDto, Integer> partiesWithVotes = new LinkedHashMap<>();
-
         try {
-            Map<Candidate, Integer> map = voteRepository
-                    .findAll()
+            return voteRepository.findMaxVotes()
                     .stream()
                     .collect(Collectors.toMap(
-                            e -> candidateRepository.findById(e.getCandidate().getId()).get(),
-                            e -> e.getVotes(),
+                            v -> modelMapper.fromPoliticalPartyToPoliticalPartyDto(v.getCandidate().getPoliticalParty()),
+                            Vote::getVotes,
                             (v1, v2) -> v1,
-                            () -> new HashMap<>()
+                            LinkedHashMap::new
                     ));
-            for (Map.Entry<Candidate, Integer> entry : map.entrySet()) {
-                PoliticalPartyDto politicalPartyDto = modelMapper.fromPoliticalPartyToPoliticalPartyDto(
-                        politicalPartyRepository.findById(entry.getKey().getPoliticalParty().getId()).get());
-                if (partiesWithVotes.keySet().contains(politicalPartyDto)) {
-                    partiesWithVotes.put(politicalPartyDto,
-                            partiesWithVotes.get(politicalPartyDto) + entry.getValue());
-                } else {
-                    partiesWithVotes.put(politicalPartyDto,
-                            entry.getValue());
-                }
-            }
         } catch (Exception e) {
-            throw new MyException(ExceptionCode.SERVICE, "GET ALL POLITICAL PARTIES SORTED BY VOTES: " + e);
+            throw new MyException(ExceptionCode.SERVICE, "GET ALL POLITICAL PARTIES BY VOTES: " + e);
         }
-        return partiesWithVotes;
     }
 }

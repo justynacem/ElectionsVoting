@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VoteRepository extends JpaRepository<Vote, Long> {
-    List<Vote> findAllByCandidateOrderByVotes();
-
     @Query("select v from Vote v order by v.votes desc")
     List<Vote> findMaxVotes();
 }

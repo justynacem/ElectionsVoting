@@ -4,18 +4,12 @@ import com.app.dto.MyModelMapper;
 import com.app.dto.TokenDto;
 import com.app.dto.VoterDto;
 import com.app.exceptions.ExceptionCode;
-import com.app.exceptions.ExceptionInfo;
 import com.app.exceptions.MyException;
-import com.app.model.Constituency;
-import com.app.model.Token;
-import com.app.model.Voter;
-import com.app.repository.ConstituencyRepository;
 import com.app.repository.TokenRepository;
 import com.app.repository.VoterRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 
 @Service
 @Transactional

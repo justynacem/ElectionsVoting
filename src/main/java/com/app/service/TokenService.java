@@ -18,11 +18,9 @@ import java.util.Random;
 public class TokenService {
 
     private TokenRepository tokenRepository;
-    private MyModelMapper modelMapper;
 
-    public TokenService(TokenRepository tokenRepository, MyModelMapper modelMapper) {
+    public TokenService(TokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
-        this.modelMapper = modelMapper;
     }
 
     public void checkDate() {

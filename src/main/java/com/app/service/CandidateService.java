@@ -2,7 +2,6 @@ package com.app.service;
 
 import com.app.dto.CandidateDto;
 import com.app.dto.MyModelMapper;
-import com.app.dto.VoteDto;
 import com.app.exceptions.ExceptionCode;
 import com.app.exceptions.MyException;
 import com.app.model.Candidate;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,40 +61,19 @@ public class CandidateService {
         }
     }
 
-    public Map<CandidateDto, VoteDto> getAllCandidatesByVotes() {
+    public Map<CandidateDto, Integer> getAllCandidatesByVotes() {
         try {
-            Map<Candidate, Vote> map = voteRepository
-                    .findAll()
+
+            return voteRepository.findMaxVotes()
                     .stream()
                     .collect(Collectors.toMap(
-                            e -> candidateRepository.findById(e.getCandidate().getId())
-                                    .orElseThrow(NullPointerException::new),
-                            Function.identity(),
-                            (v1, v2) -> v1,
-                            () -> new HashMap<>()
-                    ));
-            return map
-                    .entrySet()
-                    .stream()
-                    .sorted(Comparator.comparing(e -> e.getValue().getVotes(), Comparator.reverseOrder()))
-                    .collect(Collectors.toMap(
-                            e -> modelMapper.fromCandidateToCandidateDto(e.getKey()),
-                            e -> modelMapper.fromVoteToVoteDto(e.getValue()),
-                            (v1, v2) -> v1,
-                            () -> new LinkedHashMap<>()
-                    ));
-
-            /*return voteRepository.findAllByCandidateOrderByVotes().stream()
-                    .collect(Collectors.toMap(
-                            v -> v.getCandidate(),
-                            v -> v.getVotes(),
-                            (v1, v2) -> v1,
-                            () -> new LinkedHashMap<>()
-
-                    ));*/
-
+                    v -> modelMapper.fromCandidateToCandidateDto(v.getCandidate()),
+                    Vote::getVotes,
+                    (v1, v2) -> v1,
+                    LinkedHashMap::new
+            ));
         } catch (Exception e) {
-            throw new MyException(ExceptionCode.SERVICE, "GET ALL CANDIDATES BY VOTES: " + e);
+            throw new MyException(ExceptionCode.SERVICE, "getAllCandidatesByVotes");
         }
     }
 }
