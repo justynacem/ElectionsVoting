@@ -2,8 +2,8 @@ package com.app.model;
 
 public enum Gender {
 
-    MALE("MALE_GENDER"),
-    FEMALE("FEMALE_GENDER");
+    MALE("Female Gender"),
+    FEMALE("Male Gender");
 
     private String description;
 

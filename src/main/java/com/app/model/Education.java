@@ -2,10 +2,10 @@ package com.app.model;
 
 public enum Education {
 
-    LOWER("HIGH_SCHOOL_EDUCATION"),
-    BACHELOR("BACHELOR_EDUCATION"),
-    MASTER("MASTER_EDUCATION"),
-    PHD("PHD_EDUCATION");
+    LOWER("High School Education"),
+    BACHELOR("Bachelor Degree"),
+    MASTER("Master Degree"),
+    PHD("PHD Degree");
 
     private String description;
 

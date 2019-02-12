@@ -8,6 +8,7 @@ import com.app.model.Candidate;
 import com.app.model.Vote;
 import com.app.repository.CandidateRepository;
 import com.app.repository.VoteRepository;
+import com.app.repository.VoterRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,11 +20,13 @@ import java.util.stream.Collectors;
 public class CandidateService {
     private CandidateRepository candidateRepository;
     private VoteRepository voteRepository;
+    private VoterRepository voterRepository;
     private MyModelMapper modelMapper;
 
-    public CandidateService(CandidateRepository candidateRepository, VoteRepository voteRepository, MyModelMapper modelMapper) {
+    public CandidateService(CandidateRepository candidateRepository, VoteRepository voteRepository, VoterRepository voterRepository, MyModelMapper modelMapper) {
         this.candidateRepository = candidateRepository;
         this.voteRepository = voteRepository;
+        this.voterRepository = voterRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -61,14 +64,13 @@ public class CandidateService {
         }
     }
 
-    public Map<CandidateDto, Integer> getAllCandidatesByVotes() {
+    public Map<CandidateDto, Double> getAllCandidatesByVotes() {
         try {
-
             return voteRepository.findMaxVotes()
                     .stream()
                     .collect(Collectors.toMap(
                     v -> modelMapper.fromCandidateToCandidateDto(v.getCandidate()),
-                    Vote::getVotes,
+                    v -> (double) v.getVotes() / voterRepository.findAll().size() * 100,
                     (v1, v2) -> v1,
                     LinkedHashMap::new
             ));
